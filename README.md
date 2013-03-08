@@ -17,3 +17,9 @@ with your students somehow. Also note that this code listens on port
 License: WTFPL.
 
 Author: Asheesh Laroia <asheesh@asheesh.org>
+
+To run it:
+
+ $ virtualenv .
+ $ bin/pip install -r requirements.txt
+ $ bin/python app.py
