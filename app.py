@@ -29,9 +29,11 @@ def get_addresses():
 
 @app.route('/')
 def show_ips():
+    ip = flask.request.remote_addr
     return flask.render_template(
         'index.html',
-        addresses=get_addresses())
+        addresses=get_addresses(),
+        ip=ip)
 
 @app.route('/add-yourself/')
 def add_yourself():
