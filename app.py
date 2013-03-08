@@ -1,19 +1,31 @@
 import flask
-import os
+import os.path
+import ipaddr
+import errno
 
 app = flask.Flask(__name__)
 cwd = os.path.dirname(os.path.abspath(__file__))
+data_dir = os.path.abspath(os.path.join(cwd, 'addresses'))
 
 def record_new_ip(i):
     # If it is insane in format, just crash.
-    pass
+    try:
+        parsed = ipaddr.IPv4Address(i)
+    except ValueError:
+        return
+
+    as_str = str(parsed)
+
+    path = os.path.join(data_dir, as_str)
+    try:
+        os.mkdir(path)
+    except OSError, e:
+        if e.errno != errno.EEXIST:
+            raise
 
 def get_addresses():
-    '''A total placeholder for now.'''
-    return [
-        '192.168.1.2',
-        '10.0.0.1',
-        ]
+    if os.path.exists(data_dir):
+        return os.listdir(data_dir)
 
 @app.route('/')
 def show_ips():
@@ -21,6 +33,12 @@ def show_ips():
         'index.html',
         addresses=get_addresses())
 
+@app.route('/add-yourself/')
+def add_yourself():
+    ip = flask.request.remote_addr
+    record_new_ip(ip)
+    return flask.redirect('/')
+
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=8100)
 
